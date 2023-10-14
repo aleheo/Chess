@@ -1,10 +1,13 @@
 import pygame
 import sys
+import rules
 
 pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 512, 512
+BOARD_SIZE = 8
+SQUARE_SIZE = WIDTH / BOARD_SIZE
 BLACK = 0, 0, 0
 WHITE = 255, 255, 255
 IMAGES = {}
@@ -13,11 +16,13 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Шахматы')
 
 def loadImages():
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wQ', 'wK', 'pp', 'pR', 'pN', 'pB', 'pQ', 'pK']
+    pieces = ['bp', 'bR', 'bN', 'bB', 'bQ', 'bK', 'pp', 'pR', 'pN', 'pB', 'pQ', 'pK']
     for piece in pieces:
-        IMAGES[piece] = pygame.image.load("images/" + piece + ".png")
+        IMAGES[piece] = pygame.transform.scale(pygame.image.load("images/" + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
 
 def main():
+    gc = rules.GameCondition()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
