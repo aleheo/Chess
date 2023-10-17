@@ -5,8 +5,8 @@ import rules
 # Constants
 WIDTH, HEIGHT = 512, 512
 BOARD_SIZE = 8
-SQUARE_SIZE = WIDTH / BOARD_SIZE
-FRAMES = 10
+SQUARE_SIZE = WIDTH // BOARD_SIZE
+FRAMES = 5
 GRAY = 153, 153, 153
 WHITE = 255, 255, 255
 IMAGES = {}
@@ -53,12 +53,28 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     screen.fill(WHITE)
     reset = pg.time.Clock()
+    selected_square = ()
+    player_move = ()
 
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                location = pg.mouse.get_pos()
+                selected_square = (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE)
+                player_move.append(selected_square)
+                print(selected_square)
+            elif event.type == pg.MOUSEBUTTONUP:
+                location = pg.mouse.get_pos()
+                if selected_square == (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE):
+                    selected_square = ()
+                    player_move = []
+                else:
+                    player_move.append(selected_square)
+
+                print(player_move)
         GameCondition(screen, gc)
         reset.tick(FRAMES)
         pg.display.flip()

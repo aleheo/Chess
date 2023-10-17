@@ -17,8 +17,14 @@ class GameCondition:
 
         self.whiteToMove = True
 
-class ChessFigure():
+class ChessFigure:
     def __init__(self):
         self.color = "EMPTY"
 
 
+class Move:
+    def __init__(self, player_move):
+        start_row = player_move[0][0]
+        start_col = player_move[0][1]
+        end_row = player_move[1][0]
+        end_col = player_move[1][1]
