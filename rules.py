@@ -5,14 +5,14 @@ this is a description of this project and bla-bla-bla...
 class GameCondition:
     def __init__(self):
         self.board = [
-            ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+            ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
             ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
-            ['..', '..', '..', '..', '..', '..', '..', '..'],
-            ['..', '..', '..', '..', '..', '..', '..', '..'],
-            ['..', '..', '..', '..', '..', '..', '..', '..'],
-            ['..', '..', '..', '..', '..', '..', '..', '..'],
-            ['pp', 'pp', 'pp', 'pp', 'pp', 'pp', 'pp', 'pp'],
-            ['pR', 'pN', 'pB', 'pQ', 'pK', 'pB', 'pN', 'pR']
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
+            ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
         ]
 
         self.whiteToMove = True

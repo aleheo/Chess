@@ -1,45 +1,67 @@
-import pygame
+import pygame as pg
 import sys
 import rules
-
-pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 512, 512
 BOARD_SIZE = 8
 SQUARE_SIZE = WIDTH / BOARD_SIZE
-BLACK = 0, 0, 0
+FRAMES = 10
+GRAY = 153, 153, 153
 WHITE = 255, 255, 255
 IMAGES = {}
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Шахматы')
 
 def loadImages():
-    pieces = ['bp', 'bR', 'bN', 'bB', 'bQ', 'bK', 'pp', 'pR', 'pN', 'pB', 'pQ', 'pK']
+    pieces = ['bp', 'br', 'bn', 'bb', 'bq', 'bk', 'wp', 'wr', 'wn', 'wb', 'wq', 'wk']
     for piece in pieces:
-        IMAGES[piece] = pygame.transform.scale(pygame.image.load("images/" + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
+        IMAGES[piece] = pg.transform.scale(pg.image.load("images/" + piece + ".png"),
+                                           (SQUARE_SIZE, SQUARE_SIZE))
+
+
+def GameCondition(screen, gc):
+    drawBoard(screen)
+    drawPieces(screen, gc.board)
+
+
+def drawBoard(screen):
+    colors = [WHITE, GRAY]
+
+    for row in range(BOARD_SIZE):
+        for col in range(BOARD_SIZE):
+            color = colors[(row + col) % 2]
+            pg.draw.rect(screen, color, pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+
+    # Обновление экрана
+    pg.display.update()
+
+
+def drawPieces(screen, board):
+    for row in range(BOARD_SIZE):
+        for col in range(BOARD_SIZE):
+            piece = board[row][col]
+            if piece:
+                piece_image = IMAGES[piece]
+                screen.blit(piece_image, pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+    pg.display.update()
+
 
 def main():
+    pg.init()
     gc = rules.GameCondition()
+    loadImages()
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    screen.fill(WHITE)
+    reset = pg.time.Clock()
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 sys.exit()
-
-        # Очистка экрана
-        screen.fill(WHITE)
-
-        # Рисование шахматной доски
-        for row in range(8):
-            for col in range(8):
-                if (row + col) % 2 == 0:
-                    pygame.draw.rect(screen, BLACK, (col * WIDTH / 8, row * HEIGHT / 8, WIDTH / 8, HEIGHT / 8))
-
-        # Обновление экрана
-        pygame.display.update()
+        GameCondition(screen, gc)
+        reset.tick(FRAMES)
+        pg.display.flip()
 
 
 if __name__ == "__main__":
