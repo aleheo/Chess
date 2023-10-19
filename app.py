@@ -13,10 +13,18 @@ IMAGES = {}
 
 
 def loadImages():
+    """
+    Loads images of chess pieces.
+
+    This function loads images of all chess pieces, such as pawns, rooks, knights, bishops,
+    queens, and kings, in a dictionary where the keys are the piece names, and the values
+    are the corresponding Pygame image objects.
+
+    :return: None
+    """
     pieces = ['bp', 'br', 'bn', 'bb', 'bq', 'bk', 'wp', 'wr', 'wn', 'wb', 'wq', 'wk']
     for piece in pieces:
-        IMAGES[piece] = pg.transform.scale(pg.image.load("images/" + piece + ".png"),
-                                           (SQUARE_SIZE, SQUARE_SIZE))
+        IMAGES[piece] = pg.transform.scale(pg.image.load("images/" + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
 
 
 def GameCondition(screen, gc):
@@ -24,7 +32,16 @@ def GameCondition(screen, gc):
     drawPieces(screen, gc.board)
 
 
-def drawBoard(screen):
+def drawBoard(screen: pg.Surface):
+    """
+    Draws a chessboard on the provided Pygame display screen.
+
+    This function takes a Pygame display screen object and draws a standard 8x8 chessboard
+    with alternating black and white squares. The board is drawn to fit the dimensions of the screen.
+
+    :param screen: pg.Surface
+    :return: None
+    """
     colors = [WHITE, GRAY]
 
     for row in range(BOARD_SIZE):
@@ -63,18 +80,25 @@ def main():
                 sys.exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 location = pg.mouse.get_pos()
-                selected_square = (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE)
-                player_move.append(selected_square)
-                print(selected_square)
-            elif event.type == pg.MOUSEBUTTONUP:
-                location = pg.mouse.get_pos()
                 if selected_square == (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE):
                     selected_square = ()
                     player_move = []
                 else:
-                    player_move.append(selected_square)
+                    selected_square = (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE)
+                    player_move.append((location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE))
+                if len(player_move) == 2:
+                    move = rules.Move(player_move[0], player_move[1], gc.board)
+                    if move.hasPiece():
+                        gc.makeMove(move)
+                        gc.move_history.append(move.getNotation(player_move[0], player_move[1]))
+                        print(gc.move_history[-1]) #
+                        print(gc.move_history) #
+                    selected_square = ()
+                    player_move = []
 
-                print(player_move)
+                print(selected_square) #
+                print(player_move) #
+
         GameCondition(screen, gc)
         reset.tick(FRAMES)
         pg.display.flip()
