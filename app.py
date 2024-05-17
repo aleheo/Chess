@@ -28,6 +28,12 @@ def loadImages():
 
 
 def GameCondition(screen, gc):
+    """
+
+    :param screen:
+    :param gc:
+    :return:
+    """
     drawBoard(screen)
     drawPieces(screen, gc.board)
 
@@ -54,24 +60,36 @@ def drawBoard(screen: pg.Surface):
 
 
 def drawPieces(screen, board):
+    """
+
+    :param screen:
+    :param board:
+    :return:
+    """
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
             piece = board[row][col]
-            if piece:
+            if piece != '--':
                 piece_image = IMAGES[piece]
                 screen.blit(piece_image, pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     pg.display.update()
 
 
 def main():
+    """
+
+    :return: None
+    """
     pg.init()
     gc = rules.GameCondition()
+    acceptableMoves = gc.getAcceptableMove()
+    madeMove = False
     loadImages()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     screen.fill(WHITE)
     reset = pg.time.Clock()
     selected_square = ()
-    player_move = ()
+    player_move = []
 
     while True:
         for event in pg.event.get():
@@ -85,20 +103,23 @@ def main():
                     player_move = []
                 else:
                     selected_square = (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE)
-                    player_move.append((location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE))
+                    player_move.append(selected_square)
                 if len(player_move) == 2:
                     move = rules.Move(player_move[0], player_move[1], gc.board)
-                    if move.hasPiece():
+                    if move in acceptableMoves:
+                        # if move.hasPiece():
                         gc.makeMove(move)
-                        gc.move_history.append(move.getNotation(player_move[0], player_move[1]))
-                        print(gc.move_history[-1]) #
-                        print(gc.move_history) #
+                        madeMove = True
                     selected_square = ()
                     player_move = []
 
-                print(selected_square) #
-                print(player_move) #
-
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_BACKSPACE:
+                    gc.undoMove()
+                    madeMove = True
+        if madeMove:
+            acceptableMoves = gc.getAcceptableMove()
+            madeMove = False
         GameCondition(screen, gc)
         reset.tick(FRAMES)
         pg.display.flip()
