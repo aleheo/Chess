@@ -57,21 +57,26 @@ def drawPieces(screen, board):
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
             piece = board[row][col]
-            if piece:
-                piece_image = IMAGES[piece]
-                screen.blit(piece_image, pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            if piece != '--':
+                pieceImage = IMAGES[piece]
+                screen.blit(pieceImage, pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     pg.display.update()
 
 
 def main():
+    '''
+    Main function of the chess game.
+    '''
     pg.init()
     gc = rules.GameCondition()
     loadImages()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     screen.fill(WHITE)
     reset = pg.time.Clock()
-    selected_square = ()
-    player_move = ()
+    selectedSquare = ()
+    playerMove = []
+    validMoves = gc.getValidMoves()
+    moveMade = False
 
     while True:
         for event in pg.event.get():
@@ -80,24 +85,34 @@ def main():
                 sys.exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 location = pg.mouse.get_pos()
-                if selected_square == (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE):
-                    selected_square = ()
-                    player_move = []
+                row = location[1] // SQUARE_SIZE
+                col = location[0] // SQUARE_SIZE
+                if selectedSquare == (row, col):
+                    selectedSquare = ()
+                    playerMove = []
                 else:
-                    selected_square = (location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE)
-                    player_move.append((location[1] // SQUARE_SIZE, location[0] // SQUARE_SIZE))
-                if len(player_move) == 2:
-                    move = rules.Move(player_move[0], player_move[1], gc.board)
-                    if move.hasPiece():
-                        gc.makeMove(move)
-                        gc.move_history.append(move.getNotation(player_move[0], player_move[1]))
-                        print(gc.move_history[-1]) #
-                        print(gc.move_history) #
-                    selected_square = ()
-                    player_move = []
+                    selectedSquare = (row, col)
+                    playerMove.append(selectedSquare)
+                if len(playerMove) == 2:
+                    move = rules.Move(playerMove[0], playerMove[1], gc.board)
+                    print(move.getNotation(playerMove[0], playerMove[1])) ########################
+                    for i in range(len(validMoves)):
+                        if move == validMoves[i]:
+                            gc.makeMove(validMoves[i])
+                            moveMade = True
+                            selectedSquare = ()
+                            playerMove = []
+                    if not moveMade:
+                        playerMove = [selectedSquare]
 
-                print(selected_square) #
-                print(player_move) #
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_BACKSPACE:
+                    gc.undoMove()
+                    moveMade = True
+
+        if moveMade:
+            validMoves = gc.getValidMoves()
+            moveMade = False
 
         GameCondition(screen, gc)
         reset.tick(FRAMES)
